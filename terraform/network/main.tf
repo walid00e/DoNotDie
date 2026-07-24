@@ -34,3 +34,23 @@ resource "google_compute_router_nat" "default" {
     source_ip_ranges_to_nat = ["PRIMARY_IP_RANGE"]
   }
 }
+
+resource "google_compute_firewall" "default_ssh" {
+  name    = "allow-ssh"
+  network = google_compute_network.prod-vpc.name
+  allow {
+    protocol = "tcp"
+    ports    = [22]
+  }
+  source_tags = ["ssh"]
+}
+
+resource "google_compute_firewall" "default_web" {
+  name    = "allow-web"
+  network = google_compute_network.prod-vpc.name
+  allow {
+    protocol = "tcp"
+    ports    = [80, 443]
+  }
+  source_tags = ["web"]
+}
