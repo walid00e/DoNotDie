@@ -30,19 +30,14 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: debug with commands
-        run: |
-          pwd
-          ls
-
       - name: init packer
-        working-directory: ./packer
+        working-directory: ./packer/server
         run: packer init .
 
       - name: validate packer
-        working-directory: ./packer
+        working-directory: ./packer/server
         run: packer validate .
 
       - name: build packer
-        working-directory: ./packer
+        working-directory: ./packer/server
         run: packer build -var "project_id=${{ secrets.GCP_PROJECT_ID }}" .
