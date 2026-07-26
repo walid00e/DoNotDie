@@ -42,7 +42,7 @@ resource "google_compute_firewall" "default_ssh" {
     protocol = "tcp"
     ports    = [22]
   }
-  source_tags = ["ssh"]
+  source_ranges = ["0.0.0.0/0"]
 }
 
 resource "google_compute_firewall" "default_web" {

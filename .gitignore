@@ -25,3 +25,6 @@ _override.tf.json
 terraform.rc
 
 .idea
+
+*.pkrvars.hcl
+*.auto.pkrvars.hcl
