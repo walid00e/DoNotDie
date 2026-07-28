@@ -3,7 +3,7 @@ source "googlecompute" "default" {
   source_image_family = "server-golden"
   zone                = "us-central1-a"
   ssh_username        = "packer"
-  image_name          = "golden-image-{{image_version}}"
+  image_name          = "golden-image-${var.image_version}"
   network             = "prod-vpc"
   subnetwork          = "private-subnet"
   use_internal_ip     = false
