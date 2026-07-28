@@ -12,6 +12,8 @@ on:
 
 env:
   PACKER_VERSION: "1.15.4"
+  PROJECT_ID_PLACEHOLDER: "random"
+  IMAGE_VERSION_PLACEHOLDER: "1.1.1"
 
 jobs:
   validate_packer:
@@ -38,7 +40,8 @@ jobs:
       - name: Validate Packer
         run: |
           packer validate \
-          -var "project_id=${{ secrets.GCP_PROJECT_ID }}" \
+          -var "project_id=${{ env.PROJECT_ID_PLACEHOLDER }}" \
+          -var "image_version=${{ env.IMAGE_VERSION_PLACEHOLDER }}" \
           .
 
   validate_ansible:
