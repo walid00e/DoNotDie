@@ -1,5 +1,5 @@
 ---
-- name: "configure golder image"
+- name: "Configure golder image"
   hosts: localhost
   become: true
 
