@@ -13,7 +13,9 @@ on:
 env:
   PACKER_VERSION: "1.15.4"
   PROJECT_ID_PLACEHOLDER: "random"
-  IMAGE_VERSION_PLACEHOLDER: "1.1.1"
+  IMAGE_VERSION_RAW_PLACEHOLDER: "1.1.1"
+  IMAGE_VERSION_SAFE_PLACEHOLDER: "1-1-1"
+  GIT_SHA_PLACEHOLDER: "SHA0000"
 
 jobs:
   validate_packer:
@@ -41,7 +43,9 @@ jobs:
         run: |
           packer validate \
           -var "project_id=${{ env.PROJECT_ID_PLACEHOLDER }}" \
-          -var "image_version=${{ env.IMAGE_VERSION_PLACEHOLDER }}" \
+          -var "image_version_safe=${{ env.IMAGE_VERSION_SAFE_PLACEHOLDER }}" \
+          -var "image_version_raw=${{ env.IMAGE_VERSION_RAW_PLACEHOLDER }}" \
+          -var "git_sha=${{ env.GIT_SHA_PLACEHOLDER }}" \
           .
 
   validate_ansible:
