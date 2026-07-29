@@ -13,11 +13,12 @@
         name: nginx
         state: present
 
-    - name: "Create custom index.html"
+    - name: "Deploy application source files to web root"
       ansible.builtin.copy:
-        content: "<h1>GCP Golden Image - Baked by Packer & Ansible</h1>"
-        dest: /var/www/html/index.html
+        src: ../../app/
+        dest: /var/www/html/
         mode: '0644'
+        directory_mode: '0755'
 
     - name: "Ensure Nginx is started"
       ansible.builtin.service:

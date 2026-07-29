@@ -1,20 +1,18 @@
-name: Build Golder Image
+name: "Production: Build Golden Image"
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - 'ansible/**'
-      - 'packer/**'
+  release:
+    types:
+      - published
   workflow_dispatch:
 
 env:
   PACKER_VERSION: "1.15.4"
 
 jobs:
-  packer-build:
+  build_image:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: ./packer/server
@@ -23,26 +21,42 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v7
 
-      - name: setup packer
-        uses: hashicorp/setup-packer@main
-        with:
-          version: ${{ env.PACKER_VERSION }}
+      - name: Extract and Sanitize Version Strings
+        id: version_extractor
+        run: |
+          RAW_TAG="${{ github.ref_name }}"
+          # Strip leading 'v' if present (v1.2.0 -> 1.2.0)
+          VERSION_RAW="${RAW_TAG#v}"
+          # Replace dots with hyphens for GCP naming compliance (1.2.0 -> 1-2-0)
+          VERSION_SAFE=$(echo "$VERSION_RAW" | tr '.' '-')
 
-      - name: authenticate to gcp
+          # Extract the short 7-character Git commit hash
+          SHORT_SHA=$(git rev-parse --short HEAD)
+
+          # Save variables to GitHub Actions output map
+          echo "raw=${VERSION_RAW}" >> $GITHUB_OUTPUT
+          echo "safe=${VERSION_SAFE}" >> $GITHUB_OUTPUT
+          echo "sha=${SHORT_SHA}" >> $GITHUB_OUTPUT
+
+      - name: Authenticate to gcp
         uses: google-github-actions/auth@v3
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: init packer
+      - name: Setup Packer
+        uses: hashicorp/setup-packer@main
+        with:
+          version: ${{ env.PACKER_VERSION }}
+
+      - name: Initialize Packer Dependencies
         run: packer init .
 
-      - name: validate packer
+      - name: Execute Packer Build
         run: |
-          packer validate 
-          -var "project_id=${{ secrets.GCP_PROJECT_ID }}"
-          -var "image_version=${{ }}"
-          .
-
-      - name: build packer
-        run: packer build -var "project_id=${{ secrets.GCP_PROJECT_ID }}" .
+          packer build \
+            -var "project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var "image_version_safe=${{ steps.version_extractor.outputs.safe }}" \
+            -var "image_version_raw=${{ steps.version_extractor.outputs.raw }}" \
+            -var "git_sha=${{ steps.version_extractor.outputs.sha }}" \
+            .

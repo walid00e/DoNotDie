@@ -1,0 +1,5 @@
+{
+  "environment": "production",
+  "debug": false,
+  "version_placeholder": "1.1.1"
+}
