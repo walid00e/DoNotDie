@@ -1,20 +1,23 @@
+---
 - name: "configure golder image"
   hosts: localhost
   become: true
+
   tasks:
-    - name: "update apt cache"
+    - name: "Update apt cache"
       ansible.builtin.apt:
         update_cache: true
 
-    - name: "install nginx"
+    - name: "Install nginx"
       ansible.builtin.apt:
         name: nginx
         state: present
 
     - name: "Create custom index.html"
-      copy:
+      ansible.builtin.copy:
         content: "<h1>GCP Golden Image - Baked by Packer & Ansible</h1>"
         dest: /var/www/html/index.html
+        mode: '0644'
 
     - name: "Ensure Nginx is started"
       ansible.builtin.service:
